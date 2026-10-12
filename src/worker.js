@@ -16,7 +16,7 @@
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 const TG_ISS = 'https://oauth.telegram.org';
-const SESSION_DAYS = 30;
+const SESSION_DAYS = 35;
 const MAX_UPLOAD = 20 * 1024 * 1024; // Bot API getFile can only download files up to 20 MB
 const MAX_DATA = 10 * 1024 * 1024;
 
