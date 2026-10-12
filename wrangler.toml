@@ -1,0 +1,27 @@
+name = "family-roots"
+main = "src/worker.js"
+compatibility_date = "2025-06-01"
+
+# Serves public/index.html; any path that isn't a static file (/auth/*, /api/*) goes to the Worker.
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+[vars]
+# From @BotFather > your bot > Login Widget ("Client ID")
+TG_CLIENT_ID = "REPLACE_WITH_CLIENT_ID"
+# Private channel used as storage – numeric ID, e.g. "-1001234567890".
+# An invite link (t.me/+...) does not work here; get the ID with:
+#   node scripts/find-channel-id.mjs <BOT_TOKEN>
+CHANNEL_ID = "REPLACE_WITH_CHANNEL_ID"
+# Telegram user ID of the admin account (owns the channel)
+ADMIN_USER_ID = "REPLACE_WITH_ADMIN_TELEGRAM_ID"
+# Other family members allowed to sign in (comma-separated Telegram user IDs)
+ALLOWED_USER_IDS = ""
+# Android app: paste the contents of assetlinks.json from PWABuilder (one line), then redeploy.
+ANDROID_ASSETLINKS = ""
+
+# Secrets – set with `npx wrangler secret put <NAME>`, never commit them:
+#   BOT_TOKEN          – from @BotFather
+#   TG_CLIENT_SECRET   – from @BotFather > Login Widget
+#   SESSION_SECRET     – random string, 32+ characters

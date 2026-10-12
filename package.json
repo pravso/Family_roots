@@ -1,0 +1,11 @@
+{
+  "name": "family-roots",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node test/worker.test.mjs",
+    "find-channel": "node scripts/find-channel-id.mjs"
+  }
+}

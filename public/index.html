@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Roots &amp; Memories</title>
+<meta name="theme-color" content="#2f6b5a">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{--bg:#f6f3ee;--ink:#22201c;--muted:#7a746a;--line:#e4ddd2;--accent:#2f6b5a;--accent2:#e0b35a;--m:#4a7fb0;--f:#c0607a;--o:#6d8f4e}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#e6e1d8;color:var(--ink);display:flex;justify-content:center;overflow:hidden}
+.phone{width:100%;max-width:560px;height:100vh;height:100dvh;background:var(--bg);overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,.12)}
+@media(max-width:560px){.phone{box-shadow:none}}
+@media(min-width:900px){.phone{max-width:760px}.grid{grid-template-columns:repeat(4,1fr)!important}}
+@media(min-width:620px) and (max-width:899px){.grid{grid-template-columns:repeat(3,1fr)!important}}
+header{padding:16px 18px 10px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:21px;font-weight:700}
+.sync{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer;border:1px solid var(--line);border-radius:14px;padding:5px 9px;background:#fff}
+.dot{width:7px;height:7px;border-radius:50%;background:#d29b2c}
+main{flex:1;overflow:hidden;position:relative}
+.view{position:absolute;inset:0;overflow:auto}
+nav{display:flex;border-top:1px solid var(--line);background:#fff;padding-bottom:6px}
+nav button{flex:1;border:0;background:none;padding:10px 0 6px;font-size:11px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+nav button .i{font-size:20px}
+nav button.on{color:var(--accent);font-weight:600}
+.fab{position:absolute;right:18px;bottom:16px;width:54px;height:54px;border-radius:50%;background:var(--accent);color:#fff;font-size:28px;border:0;box-shadow:0 6px 16px rgba(47,107,90,.4);cursor:pointer;z-index:5}
+/* tree */
+.tree{position:relative;transform-origin:0 0}
+.tree svg{position:absolute;left:0;top:0;overflow:visible}
+.tree .sp{stroke:var(--accent2);stroke-width:3}
+.tree .pc{stroke:#b8ae9f;stroke-width:2;fill:none}
+.node{position:absolute;width:84px;text-align:center;cursor:pointer}
+.av{width:52px;height:52px;border-radius:50%;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:17px;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.15);background-size:cover;background-position:center;position:relative}
+.node .nm{font-size:12px;font-weight:600;line-height:1.2}
+.node .yr{font-size:10px;color:var(--muted)}
+.node .mcount{position:absolute;right:-6px;top:-4px;background:#fff;color:var(--ink);font-size:9px;border-radius:8px;padding:1px 4px;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.node.sel .av{outline:3px solid var(--accent2)}
+.zoom{position:absolute;right:26px;bottom:84px;display:flex;flex-direction:column;gap:6px;z-index:4}
+.zoom button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:#fff;font-size:18px;cursor:pointer}
+.hint{font-size:12px;color:var(--muted);padding:0 18px 4px}
+/* memories */
+.toolbar{padding:0 14px 8px;display:flex;gap:8px}
+.search{flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px;background:#fff}
+.fbtn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:0 13px;position:relative;font-size:14px;cursor:pointer}
+.fbtn.on{border-color:var(--accent);color:var(--accent);font-weight:600}
+.badge{position:absolute;top:-6px;right:-6px;background:var(--accent);color:#fff;font-size:10px;border-radius:9px;min-width:18px;height:18px;line-height:18px;text-align:center}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:0 14px 8px;scrollbar-width:none}
+.chips.wrap{flex-wrap:wrap;padding:0}
+.chip{flex:none;border:1px solid var(--line);background:#fff;border-radius:16px;padding:6px 11px;font-size:12px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chip.act{background:#e8f0ec;border-color:#cfe0d7;color:var(--accent)}
+.mini{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700}
+.meta{display:flex;justify-content:space-between;align-items:center;padding:0 14px 8px;font-size:12px;color:var(--muted)}
+.seg{display:flex;background:#ece7df;border-radius:9px;padding:2px}
+.seg button{border:0;background:none;padding:5px 9px;font-size:12px;border-radius:7px;cursor:pointer;color:var(--muted)}
+.seg button.on{background:#fff;color:var(--ink);font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:4px 14px 90px}
+.mc{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:pointer}
+.ph{height:108px;display:flex;align-items:center;justify-content:center;font-size:40px;background-size:cover;background-position:center}
+.mc .t{font-size:13px;font-weight:600;padding:8px 10px 2px}
+.mc .s{font-size:11px;color:var(--muted);padding:0 10px 10px}
+.yearh{grid-column:1/-1;font-weight:700;font-size:15px;margin:8px 0 0;color:var(--accent)}
+.tl{padding:0 14px 90px}
+.tlr{display:flex;gap:10px;align-items:center;background:#fff;border-radius:12px;padding:8px;margin-bottom:8px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.tlr .ph{width:56px;height:56px;border-radius:10px;flex:none;font-size:26px}
+.tlr .t{font-size:13px;font-weight:600}.tlr .s{font-size:11px;color:var(--muted);margin-top:2px}
+.empty{text-align:center;color:var(--muted);padding:40px 20px;font-size:14px;grid-column:1/-1}
+/* people list */
+.plist{padding:0 14px 90px}
+.prow{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:10px;margin-bottom:8px;cursor:pointer}
+.prow .av{width:42px;height:42px;margin:0;font-size:14px;border-width:2px}
+.prow .t{font-size:14px;font-weight:600}.prow .s{font-size:12px;color:var(--muted)}
+/* sheets */
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.35);z-index:20;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:90%;background:#fff;border-radius:22px 22px 0 0;z-index:21;overflow:auto;padding:10px 18px 24px;transform:translateY(105%);transition:transform .25s}
+.sheet.open{transform:none}
+.grab{width:40px;height:5px;border-radius:3px;background:#ddd;margin:0 auto 12px}
+.sheet h2{font-size:18px;margin-bottom:4px}
+.sheet h3{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:16px 0 8px}
+label{display:block;font-size:12px;color:var(--muted);margin:12px 0 4px}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:14px;font-family:inherit;background:#fff}
+.btn{border:0;border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600;cursor:pointer;background:var(--accent);color:#fff}
+.btn.ghost{background:#f0ece5;color:var(--ink)}
+.btn.danger{background:#fbe9e9;color:#b33}
+.row{display:flex;gap:8px;margin-top:16px}.row>*{flex:1}
+.bigph{height:200px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:70px;background-size:cover;background-position:center;margin-bottom:12px}
+.pd{display:flex;gap:14px;align-items:center}
+.pd .av{width:68px;height:68px;margin:0;font-size:22px}
+.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.thumbs .ph{height:76px;border-radius:10px;font-size:26px;cursor:pointer}
+.note{font-size:14px;line-height:1.5;margin-top:10px;color:#3d3a35}
+.toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%);background:#22201c;color:#fff;padding:9px 14px;border-radius:10px;font-size:13px;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.info{font-size:13px;line-height:1.5;color:#3d3a35;background:#f6f3ee;border-radius:12px;padding:12px;margin-top:8px}
+/* login */
+.login{position:absolute;inset:0;z-index:50;background:linear-gradient(170deg,#2f6b5a 0%,#3d7f6b 45%,var(--bg) 45.2%);display:flex;flex-direction:column;padding:56px 22px 26px;overflow:auto}
+.login.hide{display:none}
+.lg-hero{color:#fff;text-align:center}
+.lg-logo{width:84px;height:84px;border-radius:24px;background:rgba(255,255,255,.15);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:46px}
+.lg-hero h1{font-size:26px;font-weight:700}
+.lg-hero p{font-size:14px;opacity:.88;margin-top:6px;line-height:1.4}
+.lg-card{background:#fff;border-radius:20px;padding:22px 18px;margin-top:44px;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.lg-card h2{font-size:17px;margin-bottom:4px}
+.lg-card .sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+.tgbtn{display:flex;align-items:center;justify-content:center;gap:10px;background:#2aabee;color:#fff;text-decoration:none;font-weight:600;font-size:15px;border-radius:12px;padding:13px;border:0;width:100%;cursor:pointer}
+.tgbtn.off{background:#a9cfe3;cursor:not-allowed}
+.lg-msg{display:none;font-size:13px;line-height:1.45;border-radius:10px;padding:10px 12px;margin-top:12px}
+.lg-msg.warn{display:block;background:#fff4e0;color:#7a5410}
+.lg-msg.err{display:block;background:#fbe9e9;color:#9b2c2c}
+.lg-msg code{background:rgba(0,0,0,.06);padding:1px 5px;border-radius:5px;font-size:13px;user-select:all}
+.lg-small{font-size:12px;color:var(--muted);line-height:1.45;margin-top:14px}
+.lg-demo{margin-top:auto;padding-top:18px;background:none;border:0;color:var(--accent);font-weight:600;font-size:14px;cursor:pointer}
+.acct{display:flex;gap:12px;align-items:center}
+.acct .av{width:52px;height:52px;margin:0;background-color:#2aabee}
+.pill{display:inline-block;font-size:11px;font-weight:600;background:#e8f0ec;color:var(--accent);border-radius:8px;padding:2px 7px;margin-left:6px}
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+  <header>
+    <h1 id="title">Family Tree</h1>
+    <div class="sync" onclick="openSettings()"><span class="dot" id="syncdot"></span><span id="synctxt">Demo mode</span></div>
+  </header>
+  <main>
+    <div class="view" id="v-tree"></div>
+    <div class="view" id="v-mem" style="display:none"></div>
+    <div class="view" id="v-ppl" style="display:none"></div>
+    <div class="zoom" id="zoom"><button onclick="setZoom(.15)">＋</button><button onclick="setZoom(-.15)">－</button><button onclick="S.zoom=.85;renderTree()" title="Reset">⟲</button></div>
+    <button class="fab" onclick="fabAction()">＋</button>
+  </main>
+  <nav>
+    <button data-tab="tree" class="on" onclick="go('tree')"><span class="i">🌳</span>Tree</button>
+    <button data-tab="mem" onclick="go('mem')"><span class="i">🖼️</span>Memories</button>
+    <button data-tab="ppl" onclick="go('ppl')"><span class="i">👪</span>People</button>
+  </nav>
+  <div class="scrim" id="scrim" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet"></div>
+  <div class="toast" id="toast"></div>
+
+  <div class="login" id="login">
+    <div class="lg-hero">
+      <div class="lg-logo">🌳</div>
+      <h1>Roots &amp; Memories</h1>
+      <p>Your family tree and shared memories,<br>in one private place.</p>
+    </div>
+    <div class="lg-card">
+      <h2>Welcome back</h2>
+      <div class="sub">Sign in with your Telegram account to continue.</div>
+      <a class="tgbtn" id="tgbtn" href="/auth/login">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+        Continue with Telegram
+      </a>
+      <div class="lg-msg" id="lgmsg"></div>
+      <p class="lg-small">Only family members approved by the admin can sign in. Photos and family data are stored in the family's private Telegram channel.</p>
+    </div>
+    <button class="lg-demo" onclick="startDemo()">Explore with a sample family →</button>
+  </div>
+</div>
+
+<script>
+/* ---------- Data ----------
+   Demo mode uses the sample family below (in memory only).
+   Signed-in mode loads/saves via the Worker, which stores everything in the
+   admin's private Telegram channel. Photos are stored as "tg:<file_id>". */
+let people=[
+ {id:'p1',name:'Raman',gender:'m',born:1930,died:2010,parents:[],spouse:'p2'},
+ {id:'p2',name:'Kamala',gender:'f',born:1935,died:null,parents:[],spouse:'p1'},
+ {id:'p3',name:'Suresh',gender:'m',born:1958,died:null,parents:['p1','p2'],spouse:'p4'},
+ {id:'p4',name:'Lakshmi',gender:'f',born:1962,died:null,parents:[],spouse:'p3'},
+ {id:'p5',name:'Meena',gender:'f',born:1961,died:null,parents:['p1','p2'],spouse:'p6'},
+ {id:'p6',name:'Arjun',gender:'m',born:1959,died:null,parents:[],spouse:'p5'},
+ {id:'p7',name:'Karthik',gender:'m',born:1986,died:null,parents:['p3','p4'],spouse:'p8'},
+ {id:'p8',name:'Priya',gender:'f',born:1988,died:null,parents:[],spouse:'p7'},
+ {id:'p9',name:'Divya',gender:'f',born:1990,died:null,parents:['p3','p4'],spouse:null},
+ {id:'p10',name:'Rohan',gender:'m',born:1989,died:null,parents:['p5','p6'],spouse:null},
+ {id:'p11',name:'Anya',gender:'f',born:2016,died:null,parents:['p7','p8'],spouse:null},
+ {id:'p12',name:'Vik',gender:'m',born:2019,died:null,parents:['p7','p8'],spouse:null},
+];
+let memories=[
+ {id:'m1',title:'Raman & Kamala wedding',date:'1955-05-12',place:'Chennai',tags:['Wedding'],people:['p1','p2'],note:'Simple ceremony at the family temple.'},
+ {id:'m2',title:'First house',date:'1963-08-20',place:'Chennai',tags:['Milestone'],people:['p1','p2','p3','p5'],note:''},
+ {id:'m3',title:'Ooty summer trip',date:'1972-04-30',place:'Ooty',tags:['Travel'],people:['p1','p2','p3','p5'],note:'Toy train ride and tea gardens.'},
+ {id:'m4',title:'Suresh & Lakshmi wedding',date:'1984-02-10',place:'Madurai',tags:['Wedding'],people:['p3','p4','p1','p2'],note:''},
+ {id:'m5',title:'Karthik is born',date:'1986-11-03',place:'Chennai',tags:['Birth'],people:['p7','p3','p4'],note:''},
+ {id:'m6',title:'Diwali at grandma\'s',date:'1995-10-23',place:'Chennai',tags:['Festival','Reunion'],people:['p1','p2','p3','p4','p5','p6','p7','p9','p10'],note:'Whole family under one roof.'},
+ {id:'m7',title:'Rohan graduates',date:'2011-06-15',place:'Bengaluru',tags:['Graduation'],people:['p10','p5','p6'],note:''},
+ {id:'m8',title:'Karthik & Priya wedding',date:'2014-01-26',place:'Bengaluru',tags:['Wedding'],people:['p7','p8','p3','p4','p9','p10','p2'],note:''},
+ {id:'m9',title:'Goa beach weekend',date:'2015-12-28',place:'Goa',tags:['Travel'],people:['p7','p8','p9'],note:''},
+ {id:'m10',title:'Anya\'s first steps',date:'2017-09-02',place:'Stockholm',tags:['Milestone'],people:['p11','p7','p8'],note:'Took three steps toward the sofa!'},
+ {id:'m11',title:'Pongal together',date:'2019-01-15',place:'Chennai',tags:['Festival'],people:['p2','p3','p4','p7','p8','p11'],note:''},
+ {id:'m12',title:'Vik turns 1',date:'2020-03-08',place:'Stockholm',tags:['Birthday'],people:['p12','p11','p7','p8'],note:''},
+ {id:'m13',title:'Kamala\'s 85th birthday',date:'2020-07-19',place:'Chennai',tags:['Birthday','Reunion'],people:['p2','p3','p4','p5','p6','p7','p9','p10'],note:''},
+ {id:'m14',title:'Kodaikanal family trip',date:'2023-05-21',place:'Kodaikanal',tags:['Travel','Reunion'],people:['p3','p4','p7','p8','p11','p12','p9'],note:''},
+ {id:'m15',title:'Divya graduates',date:'2012-05-30',place:'Chennai',tags:['Graduation'],people:['p9','p3','p4'],note:''},
+];
+
+const TAGSTYLE={Wedding:['💍','#f7d6e0','#f0b8c8'],Birthday:['🎂','#fde4c3','#f6c98d'],Festival:['🪔','#ffe1a8','#f4b860'],Travel:['🏔️','#cfe5f4','#9ec9e8'],Graduation:['🎓','#dcd6f7','#b6abeb'],Birth:['👶','#d8f1e4','#a9dcc0'],Milestone:['⭐','#e6efc9','#c4d98a'],Reunion:['👨‍👩‍👧‍👦','#f3dcc9','#e2b694']};
+const S={tab:'tree',zoom:.85,sel:null,view:'grid',sort:'new',pq:'',f:{q:'',people:[],match:'any',from:'',to:'',places:[],tags:[]}};
+
+/* ---------- Helpers ---------- */
+const $=s=>document.querySelector(s);
+const byId=id=>people.find(p=>p.id===id);
+const uid=()=>Math.random().toString(36).slice(2,9);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials=n=>n.split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const pcolor=p=>p.gender==='m'?'var(--m)':p.gender==='f'?'var(--f)':'var(--o)';
+const years=p=>(p.born||'?')+(p.died?'–'+p.died:'');
+const fmtDate=d=>new Date(d+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+const children=p=>people.filter(c=>c.parents.includes(p.id));
+const siblings=p=>p.parents.length?people.filter(c=>c.id!==p.id&&c.parents.some(x=>p.parents.includes(x))):[];
+const memsOf=id=>memories.filter(m=>m.people.includes(id));
+const allTags=()=>[...new Set([...Object.keys(TAGSTYLE),...memories.flatMap(m=>m.tags)])];
+const allPlaces=()=>[...new Set(memories.map(m=>m.place).filter(Boolean))].sort();
+const photoUrl=v=>v&&v.startsWith('tg:')?'/api/file/'+encodeURIComponent(v.slice(3)):v;
+const bgImg=v=>`background-image:url('${photoUrl(v)}')`;
+function avatar(p,cls='av'){return `<div class="${cls}" style="background-color:${pcolor(p)};${p.photo?bgImg(p.photo):''}">${p.photo?'':initials(p.name)}</div>`}
+function photoStyle(m){
+  if(m.photo) return bgImg(m.photo);
+  const st=TAGSTYLE[m.tags[0]]||['📷','#ece7df','#d7cfc2'];
+  return `background:linear-gradient(135deg,${st[1]},${st[2]})`;
+}
+const photoEmoji=m=>m.photo?'':(TAGSTYLE[m.tags[0]]||['📷'])[0];
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove('show'),1800)}
+
+/* ---------- Navigation ---------- */
+function go(tab){
+  S.tab=tab;
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  ['tree','mem','ppl'].forEach(t=>$('#v-'+t).style.display=t===tab?'block':'none');
+  $('#zoom').style.display=tab==='tree'?'flex':'none';
+  $('#title').textContent={tree:'Family Tree',mem:'Memories',ppl:'People'}[tab];
+  render();
+}
+function render(){if(S.tab==='tree')renderTree();else if(S.tab==='mem')renderMemories();else renderPeople();}
+function fabAction(){S.tab==='mem'?memoryForm():personForm()}
+
+/* ---------- Tree layout ---------- */
+const NW=96,RH=140;
+function computeGens(){
+  const g={};people.forEach(p=>g[p.id]=0);
+  for(let k=0;k<25;k++)people.forEach(p=>{
+    const ps=p.parents.filter(byId);
+    if(ps.length)g[p.id]=Math.max(...ps.map(x=>g[x]))+1;
+    else{const sp=p.spouse&&byId(p.spouse);if(sp&&sp.parents.length)g[p.id]=g[sp.id];}
+  });
+  return g;
+}
+function layout(){
+  const g=computeGens(),pos={};
+  const maxG=Math.max(0,...Object.values(g));
+  for(let gen=0;gen<=maxG;gen++){
+    const row=people.filter(p=>g[p.id]===gen),placed=new Set(),blocks=[],groups={};
+    const addSpouse=(p,arr)=>{const sp=p.spouse&&byId(p.spouse);if(sp&&g[sp.id]===gen&&!placed.has(sp.id)){arr.push(sp);placed.add(sp.id);}};
+    row.forEach(p=>{const ps=p.parents.filter(x=>pos[x]);if(ps.length){const key=ps.slice().sort().join('|');
+      (groups[key]=groups[key]||{anchor:ps.reduce((a,x)=>a+pos[x].x,0)/ps.length,kids:[]}).kids.push(p);}});
+    Object.values(groups).sort((a,b)=>a.anchor-b.anchor).forEach(gr=>{
+      gr.kids.sort((a,b)=>(a.born||0)-(b.born||0));
+      const mem=[];
+      gr.kids.forEach(k=>{if(placed.has(k.id))return;mem.push(k);placed.add(k.id);addSpouse(k,mem);});
+      if(mem.length)blocks.push({anchor:gr.anchor,mem});
+    });
+    row.forEach(p=>{if(placed.has(p.id))return;const mem=[p];placed.add(p.id);addSpouse(p,mem);blocks.push({anchor:null,mem});});
+    let cursor=-Infinity;
+    blocks.forEach(b=>{
+      const w=b.mem.length*NW;
+      let start=b.anchor==null?(cursor===-Infinity?0:cursor):Math.max(cursor,b.anchor-(w-NW)/2);
+      b.mem.forEach((m,i)=>pos[m.id]={x:start+i*NW,y:gen*RH});
+      cursor=start+w+14;
+    });
+  }
+  const vals=Object.values(pos);
+  if(vals.length){const minX=Math.min(...vals.map(p=>p.x));vals.forEach(p=>{p.x+=24-minX;p.y+=16});}
+  return pos;
+}
+function renderTree(){
+  const el=$('#v-tree');
+  if(!people.length){el.innerHTML='<div class="empty">No people yet. Tap ＋ to add the first family member.</div>';return;}
+  const pos=layout(),vals=Object.values(pos);
+  const W=Math.max(...vals.map(p=>p.x))+NW+24,H=Math.max(...vals.map(p=>p.y))+RH;
+  const cx=id=>pos[id].x+NW/2;
+  let lines='';
+  people.forEach(p=>{if(p.spouse&&pos[p.spouse]&&p.id<p.spouse){const y=pos[p.id].y+28;lines+=`<line class="sp" x1="${cx(p.id)}" y1="${y}" x2="${cx(p.spouse)}" y2="${y}"/>`;}});
+  people.forEach(c=>{
+    const ps=c.parents.filter(x=>pos[x]);if(!ps.length)return;
+    const coupled=ps.length===2;
+    const px=ps.reduce((a,x)=>a+cx(x),0)/ps.length;
+    const py=pos[ps[0]].y+(coupled?28:92);
+    const cy=pos[c.id].y,my=cy-22;
+    lines+=`<path class="pc" d="M${px} ${py} V${my} H${cx(c.id)} V${cy}"/>`;
+  });
+  const nodes=people.map(p=>{const n=memsOf(p.id).length;return `<div class="node ${S.sel===p.id?'sel':''}" style="left:${pos[p.id].x+6}px;top:${pos[p.id].y}px" onclick="openPerson('${p.id}')">
+    <div class="av" style="background-color:${pcolor(p)};${p.photo?bgImg(p.photo):''}">${p.photo?'':initials(p.name)}${n?`<span class="mcount">📷${n}</span>`:''}</div>
+    <div class="nm">${esc(p.name)}</div><div class="yr">${years(p)}</div></div>`}).join('');
+  el.innerHTML=`<div class="hint">Tap a person to see relatives and memories. ${people.length} people · ${computeMaxGen()} generations</div>
+    <div style="width:${W*S.zoom}px;height:${H*S.zoom+60}px"><div class="tree" style="width:${W}px;height:${H}px;transform:scale(${S.zoom})">
+    <svg width="${W}" height="${H}">${lines}</svg>${nodes}</div></div>`;
+}
+const computeMaxGen=()=>Math.max(0,...Object.values(computeGens()))+1;
+function setZoom(d){S.zoom=Math.min(1.6,Math.max(.4,S.zoom+d));renderTree();}
+
+/* ---------- Sheets ---------- */
+function openSheet(html){$('#sheet').innerHTML='<div class="grab"></div>'+html;$('#sheet').classList.add('open');$('#scrim').classList.add('open');$('#sheet').scrollTop=0;}
+function closeSheet(){$('#sheet').classList.remove('open');$('#scrim').classList.remove('open');if(S.sel){S.sel=null;if(S.tab==='tree')renderTree();}}
+
+/* ---------- Person detail ---------- */
+function relChips(list){return list.length?`<div class="chips wrap">${list.map(p=>`<span class="chip" onclick="openPerson('${p.id}')"><span class="mini" style="background:${pcolor(p)}">${initials(p.name)}</span>${esc(p.name)}</span>`).join('')}</div>`:'<div style="font-size:13px;color:var(--muted)">—</div>'}
+function openPerson(id){
+  const p=byId(id);if(!p)return;S.sel=id;if(S.tab==='tree')renderTree();
+  const ms=memsOf(id).sort((a,b)=>b.date.localeCompare(a.date));
+  const parents=p.parents.map(byId).filter(Boolean),sp=p.spouse&&byId(p.spouse);
+  openSheet(`<div class="pd">${avatar(p)}<div><h2>${esc(p.name)}</h2><div style="color:var(--muted);font-size:13px">${years(p)}${p.died?'':p.born?` · age ${new Date().getFullYear()-p.born}`:''}</div></div></div>
+   <h3>Parents</h3>${relChips(parents)}
+   <h3>Spouse</h3>${relChips(sp?[sp]:[])}
+   <h3>Children</h3>${relChips(children(p))}
+   <h3>Siblings</h3>${relChips(siblings(p))}
+   <h3>Memories (${ms.length})</h3>
+   ${ms.length?`<div class="thumbs">${ms.slice(0,6).map(m=>`<div class="ph" style="${photoStyle(m)}" title="${esc(m.title)}" onclick="openMemory('${m.id}')">${photoEmoji(m)}</div>`).join('')}</div>
+   <button class="btn ghost" style="width:100%;margin-top:8px" onclick="filterByPerson('${id}')">See all memories with ${esc(p.name)} →</button>`:'<div style="font-size:13px;color:var(--muted)">No memories tagged yet.</div>'}
+   <h3>Add relative</h3>
+   <div class="chips wrap">
+     <span class="chip" onclick="personForm(null,{rel:'child',of:'${id}'})">＋ Child</span>
+     ${sp?'':`<span class="chip" onclick="personForm(null,{rel:'spouse',of:'${id}'})">＋ Spouse</span>`}
+     ${p.parents.length<2?`<span class="chip" onclick="personForm(null,{rel:'parent',of:'${id}'})">＋ Parent</span>`:''}
+     <span class="chip" onclick="memoryForm(null,'${id}')">＋ Memory</span>
+   </div>
+   <div class="row"><button class="btn ghost" onclick="personForm('${id}')">Edit</button><button class="btn danger" onclick="deletePerson('${id}')">Delete</button></div>`);
+}
+function filterByPerson(id){S.f={q:'',people:[id],match:'any',from:'',to:'',places:[],tags:[]};closeSheet();go('mem');}
+
+/* ---------- Person form ---------- */
+function personForm(id,ctx){
+  const p=id?byId(id):{name:'',gender:'',born:'',died:'',parents:[],spouse:null};
+  let par=[...p.parents],spouse=p.spouse;
+  if(ctx){const t=byId(ctx.of);
+    if(ctx.rel==='child'){par=[t.id];if(t.spouse)par.push(t.spouse);}
+    if(ctx.rel==='spouse')spouse=t.id;}
+  const opts=(sel,excl)=>`<option value="">— none —</option>`+people.filter(x=>x.id!==id&&!excl.includes(x.id)).map(x=>`<option value="${x.id}" ${x.id===sel?'selected':''}>${esc(x.name)} (${x.born||'?'})</option>`).join('');
+  const title=id?'Edit person':ctx?`Add ${ctx.rel} of ${esc(byId(ctx.of).name)}`:'Add person';
+  openSheet(`<h2>${title}</h2>
+   <label>Full name</label><input id="f-name" value="${esc(p.name)}" placeholder="e.g. Kamala">
+   <label>Gender</label><select id="f-g"><option value="">—</option><option value="f" ${p.gender==='f'?'selected':''}>Female</option><option value="m" ${p.gender==='m'?'selected':''}>Male</option><option value="o" ${p.gender==='o'?'selected':''}>Other</option></select>
+   <div class="row" style="margin-top:0"><div><label>Born (year)</label><input id="f-b" type="number" value="${p.born||''}"></div><div><label>Died (year)</label><input id="f-d" type="number" value="${p.died||''}"></div></div>
+   <label>Profile photo</label><input id="f-ph" type="file" accept="image/*">
+   ${ctx&&ctx.rel==='parent'?'':`<label>Parent 1</label><select id="f-p1">${opts(par[0],[])}</select>
+   <label>Parent 2</label><select id="f-p2">${opts(par[1],[])}</select>`}
+   <label>Spouse</label><select id="f-sp">${opts(spouse,[])}</select>
+   <div class="row"><button class="btn ghost" onclick="${id?`openPerson('${id}')`:'closeSheet()'}">Cancel</button><button class="btn" id="f-save">Save</button></div>`);
+  $('#f-save').onclick=async()=>{
+    const name=$('#f-name').value.trim();if(!name){toast('Name is required');return;}
+    const photo=await uploadFromInput('#f-ph','#f-save');if(photo===false)return;
+    const rec=id?byId(id):{id:uid(),parents:[],spouse:null};
+    rec.name=name;rec.gender=$('#f-g').value;rec.born=+$('#f-b').value||null;rec.died=+$('#f-d').value||null;
+    if(photo)rec.photo=photo;
+    if($('#f-p1'))rec.parents=[$('#f-p1').value,$('#f-p2').value].filter((v,i,a)=>v&&a.indexOf(v)===i);
+    const newSp=$('#f-sp').value||null;
+    if(rec.spouse!==newSp){const old=rec.spouse&&byId(rec.spouse);if(old)old.spouse=null;rec.spouse=newSp;
+      if(newSp){const s=byId(newSp);if(s.spouse&&s.spouse!==rec.id){const o=byId(s.spouse);if(o)o.spouse=null;}s.spouse=rec.id;}}
+    if(!id)people.push(rec);
+    if(ctx&&ctx.rel==='parent'){const t=byId(ctx.of);
+      if(t.parents.length===1&&!rec.spouse){const other=byId(t.parents[0]);if(other&&!other.spouse){other.spouse=rec.id;rec.spouse=other.id;}}
+      t.parents.push(rec.id);}
+    persist();toast(id?'Saved':'Added '+name);openPerson(rec.id);render();
+  };
+}
+function deletePerson(id){
+  const p=byId(id);if(!confirm(`Delete ${p.name}? Their memories stay, but they'll be untagged.`))return;
+  people=people.filter(x=>x.id!==id);
+  people.forEach(x=>{x.parents=x.parents.filter(y=>y!==id);if(x.spouse===id)x.spouse=null;});
+  memories.forEach(m=>m.people=m.people.filter(y=>y!==id));
+  S.f.people=S.f.people.filter(y=>y!==id);
+  persist();closeSheet();render();toast('Deleted');
+}
+const readFile=f=>new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(f);});
+/* Returns: null (no file chosen), photo ref string, or false (failed – abort save) */
+async function uploadFromInput(inputSel,btnSel){
+  const f=$(inputSel).files[0];if(!f)return null;
+  if(!S.live)return readFile(f);
+  const btn=$(btnSel);btn.disabled=true;btn.textContent='Uploading…';
+  try{
+    if(f.size>20*1024*1024)throw new Error('Photo is larger than 20 MB');
+    const fd=new FormData();fd.append('file',f,f.name);
+    const r=await api('/api/upload',{method:'POST',body:fd});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(j.error==='images_only'?'Only images can be uploaded':j.error==='too_large'?'Photo is larger than 20 MB':'Upload failed');
+    return 'tg:'+j.fileId;
+  }catch(e){toast(e.message||'Upload failed');btn.disabled=false;btn.textContent='Save';return false;}
+}
+
+/* ---------- Memories ---------- */
+function activeCount(){const f=S.f;return f.people.length+f.places.length+f.tags.length+(f.from||f.to?1:0);}
+function filtered(){
+  const f=S.f,q=f.q.toLowerCase();
+  return memories.filter(m=>{
+    const y=+m.date.slice(0,4);
+    if(q){const hay=[m.title,m.place,m.note,...m.tags,...m.people.map(id=>byId(id)?.name||'')].join(' ').toLowerCase();if(!hay.includes(q))return false;}
+    if(f.people.length&&(f.match==='all'?!f.people.every(id=>m.people.includes(id)):!f.people.some(id=>m.people.includes(id))))return false;
+    if(f.from&&y<+f.from)return false;
+    if(f.to&&y>+f.to)return false;
+    if(f.places.length&&!f.places.includes(m.place))return false;
+    if(f.tags.length&&!f.tags.some(t=>m.tags.includes(t)))return false;
+    return true;
+  }).sort((a,b)=>S.sort==='old'?a.date.localeCompare(b.date):b.date.localeCompare(a.date));
+}
+function renderMemories(){
+  $('#v-mem').innerHTML=`<div class="toolbar"><input class="search" id="q" placeholder="Search title, person, place, note…" value="${esc(S.f.q)}"><button class="fbtn" id="fb" onclick="openFilters()">⚙︎ Filters</button></div>
+   <div class="chips" id="actchips"></div>
+   <div class="meta"><span id="cnt"></span><span style="display:flex;gap:6px">
+     <div class="seg"><button data-s="new" onclick="S.sort='new';renderResults()">Newest</button><button data-s="old" onclick="S.sort='old';renderResults()">Oldest</button></div>
+     <div class="seg"><button data-v="grid" onclick="S.view='grid';renderResults()">▦</button><button data-v="tl" onclick="S.view='tl';renderResults()">☰</button></div></span></div>
+   <div id="results"></div>`;
+  $('#q').oninput=e=>{S.f.q=e.target.value;renderResults();};
+  renderResults();
+}
+function renderResults(){
+  const f=S.f,list=filtered(),n=activeCount();
+  $('#fb').classList.toggle('on',n>0);$('#fb').innerHTML='⚙︎ Filters'+(n?`<span class="badge">${n}</span>`:'');
+  document.querySelectorAll('[data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===S.sort));
+  document.querySelectorAll('[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===S.view));
+  const ac=[...f.people.map(id=>`<span class="chip act" onclick="toggleF('people','${id}');renderResults()">👤 ${esc(byId(id)?.name)} ✕</span>`),
+    ...(f.from||f.to?[`<span class="chip act" onclick="S.f.from='';S.f.to='';renderResults()">📅 ${f.from||'…'}–${f.to||'…'} ✕</span>`]:[]),
+    ...f.places.map(p=>`<span class="chip act" onclick="toggleF('places','${esc(p)}');renderResults()">📍 ${esc(p)} ✕</span>`),
+    ...f.tags.map(t=>`<span class="chip act" onclick="toggleF('tags','${esc(t)}');renderResults()"># ${esc(t)} ✕</span>`)];
+  if(f.people.length>1)ac.splice(f.people.length,0,`<span class="chip" onclick="S.f.match=S.f.match==='all'?'any':'all';renderResults()">${f.match==='all'?'All together':'Any of them'} ⇄</span>`);
+  if(ac.length)ac.push(`<span class="chip" onclick="clearFilters()">Clear all</span>`);
+  $('#actchips').innerHTML=ac.join('');$('#actchips').style.display=ac.length?'flex':'none';
+  $('#cnt').textContent=`${list.length} of ${memories.length} memories`;
+  if(!list.length){$('#results').innerHTML='<div class="empty">No memories match these filters.</div>';return;}
+  const byYear={};list.forEach(m=>(byYear[m.date.slice(0,4)]=byYear[m.date.slice(0,4)]||[]).push(m));
+  const years=Object.keys(byYear).sort((a,b)=>S.sort==='old'?a-b:b-a);
+  if(S.view==='grid'){
+    $('#results').innerHTML=`<div class="grid">${years.map(y=>`<div class="yearh">${y}</div>`+byYear[y].map(m=>`<div class="mc" onclick="openMemory('${m.id}')"><div class="ph" style="${photoStyle(m)}">${photoEmoji(m)}</div><div class="t">${esc(m.title)}</div><div class="s">${esc(m.place||'')} · ${m.people.length} 👤</div></div>`).join('')).join('')}</div>`;
+  }else{
+    $('#results').innerHTML=`<div class="tl">${years.map(y=>`<div class="yearh" style="margin:10px 0 6px">${y}</div>`+byYear[y].map(m=>`<div class="tlr" onclick="openMemory('${m.id}')"><div class="ph" style="${photoStyle(m)}">${photoEmoji(m)}</div><div><div class="t">${esc(m.title)}</div><div class="s">${fmtDate(m.date)} · ${esc(m.place||'')}</div><div class="s">${m.people.map(id=>byId(id)?.name).filter(Boolean).slice(0,4).join(', ')}${m.people.length>4?` +${m.people.length-4}`:''}</div></div></div>`).join('')).join('')}</div>`;
+  }
+}
+function toggleF(k,v){const a=S.f[k];const i=a.indexOf(v);i<0?a.push(v):a.splice(i,1);}
+function clearFilters(){S.f={q:S.f.q,people:[],match:'any',from:'',to:'',places:[],tags:[]};renderResults();}
+
+/* ---------- Filter sheet ---------- */
+function openFilters(){
+  const f=S.f,ys=[...new Set(memories.map(m=>m.date.slice(0,4)))].sort();
+  const yopt=sel=>`<option value="">Any</option>`+ys.map(y=>`<option ${y===sel?'selected':''}>${y}</option>`).join('');
+  const chip=(k,v,label)=>`<span class="chip ${f[k].includes(v)?'on':''}" onclick="toggleF('${k}','${esc(v)}');openFilters()">${label}</span>`;
+  openSheet(`<h2>Filter memories</h2>
+   <h3>People</h3><div class="chips wrap">${people.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(p=>chip('people',p.id,`<span class="mini" style="background:${pcolor(p)}">${initials(p.name)}</span>${esc(p.name)}`)).join('')}</div>
+   ${f.people.length>1?`<div class="seg" style="margin-top:8px;display:inline-flex"><button class="${f.match==='any'?'on':''}" onclick="S.f.match='any';openFilters()">Any of them</button><button class="${f.match==='all'?'on':''}" onclick="S.f.match='all';openFilters()">All together</button></div>`:''}
+   <h3>Year</h3><div class="row" style="margin-top:0"><select id="ff" onchange="S.f.from=this.value;openFilters()">${yopt(f.from)}</select><select id="ft" onchange="S.f.to=this.value;openFilters()">${yopt(f.to)}</select></div>
+   <div class="chips wrap" style="margin-top:8px">${[['1950','1979','1950s–70s'],['1980','1999','1980s–90s'],['2000','2014','2000–2014'],['2015','','2015 →']].map(([a,b,l])=>`<span class="chip ${f.from===a&&f.to===b?'on':''}" onclick="S.f.from='${a}';S.f.to='${b}';openFilters()">${l}</span>`).join('')}</div>
+   <h3>Place</h3><div class="chips wrap">${allPlaces().map(p=>chip('places',p,'📍 '+esc(p))).join('')}</div>
+   <h3>Event / tag</h3><div class="chips wrap">${allTags().map(t=>chip('tags',t,(TAGSTYLE[t]?.[0]||'#')+' '+esc(t))).join('')}</div>
+   <div class="row"><button class="btn ghost" onclick="S.f={q:S.f.q,people:[],match:'any',from:'',to:'',places:[],tags:[]};openFilters()">Clear</button><button class="btn" onclick="closeSheet();renderMemories()">Show ${filtered().length} results</button></div>`);
+  const st=$('#sheet');const top=st.scrollTop;requestAnimationFrame(()=>st.scrollTop=top);
+}
+
+/* ---------- Memory detail & form ---------- */
+function openMemory(id){
+  const m=memories.find(x=>x.id===id);
+  openSheet(`<div class="bigph" style="${photoStyle(m)}">${photoEmoji(m)}</div>
+   <h2>${esc(m.title)}</h2><div style="color:var(--muted);font-size:13px">📅 ${fmtDate(m.date)}${m.place?` · 📍 ${esc(m.place)}`:''}</div>
+   ${m.note?`<div class="note">${esc(m.note)}</div>`:''}
+   <h3>People</h3>${relChips(m.people.map(byId).filter(Boolean))}
+   <h3>Tags</h3><div class="chips wrap">${m.tags.map(t=>`<span class="chip" onclick="S.f={q:'',people:[],match:'any',from:'',to:'',places:[],tags:['${esc(t)}']};closeSheet();go('mem')">${TAGSTYLE[t]?.[0]||'#'} ${esc(t)}</span>`).join('')}
+     ${m.place?`<span class="chip" onclick="S.f={q:'',people:[],match:'any',from:'',to:'',places:['${esc(m.place)}'],tags:[]};closeSheet();go('mem')">More from ${esc(m.place)} →</span>`:''}</div>
+   <div class="row"><button class="btn ghost" onclick="memoryForm('${id}')">Edit</button><button class="btn danger" onclick="deleteMemory('${id}')">Delete</button></div>`);
+}
+function memoryForm(id,personId){
+  const m=id?memories.find(x=>x.id===id):{title:'',date:new Date().toISOString().slice(0,10),place:'',tags:[],people:personId?[personId]:[],note:''};
+  const sel={people:[...m.people],tags:[...m.tags]};
+  openSheet(`<h2>${id?'Edit memory':'Add memory'}</h2>
+   <label>Photo</label><input id="m-ph" type="file" accept="image/*">
+   <label>Title</label><input id="m-t" value="${esc(m.title)}" placeholder="e.g. Diwali at grandma's">
+   <div class="row" style="margin-top:0"><div><label>Date</label><input id="m-d" type="date" value="${m.date}"></div><div><label>Place</label><input id="m-p" list="places" value="${esc(m.place)}" placeholder="City / venue"><datalist id="places">${allPlaces().map(p=>`<option value="${esc(p)}">`).join('')}</datalist></div></div>
+   <label>Who is in it?</label><div class="chips wrap" id="m-people">${people.map(p=>`<span class="chip ${sel.people.includes(p.id)?'on':''}" data-id="${p.id}">${esc(p.name)}</span>`).join('')}</div>
+   <label>Tags</label><div class="chips wrap" id="m-tags">${allTags().map(t=>`<span class="chip ${sel.tags.includes(t)?'on':''}" data-id="${esc(t)}">${TAGSTYLE[t]?.[0]||'#'} ${esc(t)}</span>`).join('')}</div>
+   <input id="m-newtag" placeholder="Add custom tag + Enter" style="margin-top:8px">
+   <label>Story / note</label><textarea id="m-n" rows="3">${esc(m.note)}</textarea>
+   <div class="row"><button class="btn ghost" onclick="${id?`openMemory('${id}')`:'closeSheet()'}">Cancel</button><button class="btn" id="m-save">Save</button></div>`);
+  const wire=(box,key)=>$(box).onclick=e=>{const c=e.target.closest('.chip');if(!c)return;const v=c.dataset.id,a=sel[key],i=a.indexOf(v);i<0?a.push(v):a.splice(i,1);c.classList.toggle('on');};
+  wire('#m-people','people');wire('#m-tags','tags');
+  $('#m-newtag').onkeydown=e=>{if(e.key!=='Enter')return;const t=e.target.value.trim();if(!t||sel.tags.includes(t))return;sel.tags.push(t);
+    $('#m-tags').insertAdjacentHTML('beforeend',`<span class="chip on" data-id="${esc(t)}"># ${esc(t)}</span>`);e.target.value='';};
+  $('#m-save').onclick=async()=>{
+    const title=$('#m-t').value.trim();if(!title){toast('Title is required');return;}
+    if(!$('#m-d').value){toast('Date is required');return;}
+    const photo=await uploadFromInput('#m-ph','#m-save');if(photo===false)return;
+    const rec=id?m:{id:uid()};
+    Object.assign(rec,{title,date:$('#m-d').value,place:$('#m-p').value.trim(),note:$('#m-n').value.trim(),people:sel.people,tags:sel.tags});
+    if(photo)rec.photo=photo;
+    if(!id)memories.push(rec);
+    persist();toast(id?'Saved':'Memory added');openMemory(rec.id);render();
+  };
+}
+function deleteMemory(id){if(!confirm('Delete this memory?'))return;memories=memories.filter(m=>m.id!==id);persist();closeSheet();render();toast('Deleted');}
+
+/* ---------- People list ---------- */
+function renderPeople(){
+  $('#v-ppl').innerHTML=`<div class="toolbar"><input class="search" id="pq" placeholder="Search family members…" value="${esc(S.pq)}"></div><div id="plist" class="plist"></div>`;
+  $('#pq').oninput=e=>{S.pq=e.target.value;renderPList();};renderPList();
+}
+function renderPList(){
+  const q=S.pq.toLowerCase();
+  const list=people.filter(p=>p.name.toLowerCase().includes(q)).sort((a,b)=>(a.born||0)-(b.born||0));
+  $('#plist').innerHTML=list.map(p=>{const sp=p.spouse&&byId(p.spouse);return `<div class="prow" onclick="openPerson('${p.id}')">${avatar(p)}<div style="flex:1"><div class="t">${esc(p.name)}</div><div class="s">${years(p)}${sp?` · married to ${esc(sp.name)}`:''}</div></div><div class="s" style="font-size:12px;color:var(--muted)">📷 ${memsOf(p.id).length}</div></div>`}).join('')||'<div class="empty">No matches</div>';
+}
+
+/* ---------- Auth & sync (Telegram via Worker) ---------- */
+function api(path,opts={}){
+  const headers=opts.body&&!(opts.body instanceof FormData)?{'content-type':'application/json'}:{};
+  return fetch(path,{credentials:'same-origin',...opts,headers:{...headers,...(opts.headers||{})}}).then(r=>{
+    if(r.status===401&&S.live){S.live=false;showLogin({error:'session_expired'});}
+    return r;
+  });
+}
+function setSync(state){
+  const m={ok:['#3aa76d','Synced · Telegram'],saving:['#d29b2c','Saving…'],err:['#d24c4c','Sync error – tap'],demo:['#9a948a','Demo mode · not saved']}[state];
+  $('#syncdot').style.background=m[0];$('#synctxt').textContent=m[1];S.sync=state;
+}
+async function loadRemote(){
+  const r=await api('/api/data');if(!r.ok)throw new Error('load '+r.status);
+  const j=await r.json();
+  people=j.data?.people||[];memories=j.data?.memories||[];S.version=j.version??null;
+  render();
+}
+let saveTimer=null,saving=false,pendingSave=false;
+function persist(){if(!S.live)return;setSync('saving');clearTimeout(saveTimer);saveTimer=setTimeout(doSave,600);}
+async function doSave(){
+  if(saving){pendingSave=true;return;}
+  saving=true;
+  try{
+    const r=await api('/api/data',{method:'PUT',body:JSON.stringify({version:S.version,
+      data:{schema:1,people,memories,updatedAt:new Date().toISOString(),updatedBy:S.user?.name||''}})});
+    if(r.status===409){await loadRemote();setSync('ok');toast('A relative saved first – latest loaded. Please redo your last change.');}
+    else if(!r.ok)throw new Error(r.status);
+    else{S.version=(await r.json()).version;setSync('ok');}
+  }catch(e){if(S.live){setSync('err');toast('Could not save – check connection');}}
+  finally{saving=false;if(pendingSave){pendingSave=false;doSave();}}
+}
+const LOGIN_ERRORS={access_denied:'Sign-in was cancelled.',state_mismatch:'Sign-in took too long or was opened in another tab. Please try again.',
+  token_exchange:'Telegram could not confirm the sign-in. Please try again.',invalid_id_token:'Telegram sign-in could not be verified.',session_expired:'Your session has ended. Please sign in again.'};
+function showLogin({offline,denied,error}={}){
+  const msg=$('#lgmsg'),btn=$('#tgbtn');
+  msg.className='lg-msg';msg.innerHTML='';
+  if(offline){btn.classList.add('off');btn.removeAttribute('href');
+    msg.className='lg-msg warn';msg.innerHTML='Telegram sign-in works once the app is deployed (see README). You can explore the demo below.';}
+  else{btn.classList.remove('off');btn.setAttribute('href','/auth/login');}
+  if(denied){msg.className='lg-msg err';msg.innerHTML=`This Telegram account isn't on the family list yet. Send your ID <code>${esc(denied)}</code> to the family admin.`;}
+  else if(error){msg.className='lg-msg err';msg.textContent=LOGIN_ERRORS[error]||'Sign-in failed. Please try again.';}
+  closeSheet();$('#login').classList.remove('hide');
+}
+function hideLogin(){$('#login').classList.add('hide');}
+function startDemo(){S.live=false;S.user=null;hideLogin();setSync('demo');go('tree');}
+async function signOut(){try{await fetch('/auth/logout',{method:'POST',credentials:'same-origin'});}catch(e){}location.replace('/');}
+
+async function boot(){
+  const h=new URLSearchParams(location.hash.slice(1));
+  if(location.hash&&history.replaceState)history.replaceState(null,'',location.pathname);
+  if(!location.protocol.startsWith('http')){showLogin({offline:true});return;}
+  let me=null;
+  try{
+    const r=await fetch('/api/me',{credentials:'same-origin'});
+    if(r.ok)me=(await r.json()).user;
+    else if(r.status!==401||!(r.headers.get('content-type')||'').includes('json'))throw 0; // no backend here
+  }catch(e){showLogin({offline:true});return;}
+  if(!me){showLogin({denied:h.get('denied'),error:h.get('login_error')});return;}
+  S.user=me;S.live=true;hideLogin();setSync('saving');
+  people=[];memories=[];go('tree');
+  try{await loadRemote();setSync('ok');}catch(e){setSync('err');toast('Could not load family data');}
+}
+
+/* ---------- Settings / account ---------- */
+function openSettings(){
+  const u=S.user;
+  const acct=S.live&&u?`<div class="acct"><div class="av" style="${u.picture?`background-image:url('${esc(u.picture)}')`:''}">${u.picture?'':initials(u.name)}</div>
+      <div><div style="font-weight:600">${esc(u.name)}${u.admin?'<span class="pill">Admin</span>':''}</div>
+      <div style="font-size:12px;color:var(--muted)">${u.username?'@'+esc(u.username)+' · ':''}Telegram ID ${esc(u.id)}</div></div></div>
+      <div class="row"><button class="btn ghost" onclick="signOut()">Sign out</button></div>`
+    :`<div class="info">You're exploring a sample family. Nothing you add here is saved.</div><div class="row"><button class="btn" onclick="showLogin({offline:!location.protocol.startsWith('http')})">Sign in with Telegram</button></div>`;
+  openSheet(`<h2>Account & sync</h2>${acct}
+   <h3>Storage</h3>
+   <div class="info">${S.live?`Status: <b>${$('#synctxt').textContent}</b><br>`:''}Family data and photos are kept in the admin's <b>private Telegram channel</b>. Each save is posted as a new version (the latest is pinned), so older versions can be recovered from the channel.</div>
+   ${S.live&&S.sync==='err'?`<div class="row"><button class="btn" onclick="doSave()">Retry save</button><button class="btn ghost" onclick="loadRemote().then(()=>setSync('ok'))">Reload latest</button></div>`:''}
+   ${u&&u.admin?`<h3>Family access (admin)</h3><div class="info">To let a relative in, ask them to try signing in – they'll see their Telegram ID. Add it to <b>ALLOWED_USER_IDS</b> in <i>wrangler.toml</i> and redeploy. Removing an ID revokes access immediately.</div>`:''}
+   <h3>Backup</h3>
+   <div class="row" style="margin-top:0"><button class="btn ghost" onclick="exportData()">⬇ Export JSON</button><label class="btn ghost" style="margin:0;text-align:center;color:var(--ink);font-size:14px">⬆ Import JSON<input type="file" accept=".json" style="display:none" onchange="importData(this.files[0])"></label></div>
+   <h3>Stats</h3><div class="info">${people.length} people · ${memories.length} memories · ${allPlaces().length} places · ${computeMaxGen()} generations</div>`);
+}
+function exportData(){const b=new Blob([JSON.stringify({schema:1,people,memories},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='family-roots.json';a.click();}
+async function importData(f){if(!f)return;try{const d=JSON.parse(await f.text());if(!Array.isArray(d.people)||!Array.isArray(d.memories))throw 0;
+  if(S.live&&!confirm('Replace the family data for everyone with this file?'))return;
+  people=d.people;memories=d.memories;persist();closeSheet();render();toast('Imported');}catch(e){toast('Invalid file');}}
+
+if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('/sw.js').catch(()=>{});}
+boot();
+</script>
+</body>
+</html>
