@@ -1,6 +1,6 @@
 # Roots & Memories – Telegram edition
 
-A family tree and memories app. Family members sign in with Telegram, and all data and photos are stored in a **private Telegram channel owned by the admin's account**.
+A family tree and memories app. Family members sign in with Telegram, and all data and photos are stored in a **private Telegram channel owned by the admin's account**. 
 
 ```
 public/index.html   the app (also has a demo mode with sample data)
